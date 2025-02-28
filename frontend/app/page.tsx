@@ -1,13 +1,49 @@
 "use client";
-import { useState } from "react";
+
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
+import { useState, useEffect } from "react";
+import { ethers } from "ethers";
 import { rollDiceApi } from "./api";
 import Dice from "./components/Dice";
 
 export default function DiceGame() {
   const [bet, setBet] = useState<number>(0);
-  const [balance, setBalance] = useState<number>(1000);
+  const [balance, setBalance] = useState<number>(1000); // Default balance
   const [roll, setRoll] = useState<number | null>(null);
   const [result, setResult] = useState<string>("");
+  const [walletConnected, setWalletConnected] = useState<boolean>(false);
+  const [ethBalance, setEthBalance] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedBalance = localStorage.getItem("cryptoBalance");
+    if (storedBalance) {
+      setBalance(Number(storedBalance));
+    }
+  }, []);
+
+  const connectWallet = async () => {
+    if (!window.ethereum) {
+      alert("MetaMask is not installed. Using local balance.");
+      return;
+    }
+
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const accounts = await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+      const balance = await provider.getBalance(accounts[0]);
+      const ethBalanceFormatted = ethers.formatEther(balance);
+
+      setWalletConnected(true);
+      setEthBalance(ethBalanceFormatted);
+    } catch (error) {
+      console.error("Wallet connection failed:", error);
+    }
+  };
 
   const rollDice = async () => {
     if (bet <= 0 || bet > balance) {
@@ -19,6 +55,8 @@ export default function DiceGame() {
       const { roll, newBalance } = await rollDiceApi(bet);
       setRoll(roll);
       setBalance(newBalance);
+      localStorage.setItem("cryptoBalance", newBalance.toString());
+
       setResult(`You rolled a ${roll}. ${roll >= 4 ? "You won!" : "You lost!"}`);
     } catch (error) {
       setResult((error as Error).message);
@@ -28,7 +66,20 @@ export default function DiceGame() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-6">
       <h1 className="text-4xl font-bold mb-6 text-blue-400">🎲 Provably Fair Dice Game 🎲</h1>
-      <p className="mb-4 text-lg font-semibold">Balance: <span className="text-green-400">${balance}</span></p>
+      <p className="mb-4 text-lg font-semibold">
+        Balance: <span className="text-green-400">${balance}</span>
+      </p>
+
+      {walletConnected ? (
+        <p className="text-yellow-400">Wallet Connected! ETH Balance: {ethBalance} ETH</p>
+      ) : (
+        <button
+          onClick={connectWallet}
+          className="mb-4 px-4 py-2 bg-yellow-500 rounded-lg shadow-md hover:bg-yellow-600 transition-all"
+        >
+          Connect Wallet
+        </button>
+      )}
 
       <Dice roll={roll} />
 

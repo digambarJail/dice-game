@@ -46,13 +46,13 @@ export default function DiceGame() {
   };
 
   const rollDice = async () => {
-    if (bet <= 0 || bet > balance) {
+    if (Number(bet) <= 0 || Number(bet) > balance) {
       setResult("Invalid bet amount.");
       return;
     }
 
     try {
-      const { roll, newBalance } = await rollDiceApi(bet);
+      const { roll, newBalance } = await rollDiceApi(Number(bet));
       setRoll(roll);
       setBalance(newBalance);
       localStorage.setItem("cryptoBalance", newBalance.toString());

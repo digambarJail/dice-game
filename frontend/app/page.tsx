@@ -11,7 +11,7 @@ import { rollDiceApi } from "./api";
 import Dice from "./components/Dice";
 
 export default function DiceGame() {
-  const [bet, setBet] = useState<number>(0);
+  const [bet, setBet] = useState<number | "">("");
   const [balance, setBalance] = useState<number>(1000); // Default balance
   const [roll, setRoll] = useState<number | null>(null);
   const [result, setResult] = useState<string>("");

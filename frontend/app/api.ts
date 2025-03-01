@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://dice-game-cjj9.onrender.com";
+const API_URL = "https://dice-game-cjj9.onrender.com/api";
 
 interface RollDiceResponse {
   roll: number;

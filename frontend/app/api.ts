@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = "https://dice-game-cjj9.onrender.com/api";
+// const API_URL = "https://dice-game-cjj9.onrender.com/api";
+const API_URL = "http://localhost:8080/api"
 
 interface RollDiceResponse {
   roll: number;
@@ -18,8 +19,8 @@ export const rollDiceApi = async (bet: number): Promise<RollDiceResponse> => {
 
 export const getBalanceApi = async (): Promise<any> => {
   try {
-    const response = await axios.get<RollDiceResponse>(`${API_URL}/get-balance`);
-    return response.data;
+    const response = await axios.get<any>(`${API_URL}/get-balance`);
+    return response.data.balance;
   } catch (error) {
     throw new Error("Error rolling dice.");
   }

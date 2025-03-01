@@ -31,9 +31,9 @@ exports.getBalance = async (req, res) => {
     let player = await Player.findOne();
     if (!player) player = await Player.create({ balance: 1000 });
 
-    const balance = Player.balance;
+    const balance = player.balance;
 
-    res.json({balance});
+    return res.json({balance});
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }

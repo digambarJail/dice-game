@@ -25,3 +25,16 @@ exports.rollDice = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.getBalance = async (req, res) => {
+  try {
+    let player = await Player.findOne();
+    if (!player) player = await Player.create({ balance: 1000 });
+
+    const balance = Player.balance;
+
+    res.json({balance});
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};

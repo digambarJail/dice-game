@@ -7,7 +7,7 @@ declare global {
 }
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { rollDiceApi } from "./api";
+import { rollDiceApi, getBalanceApi } from "./api";
 import Dice from "./components/Dice";
 
 export default function DiceGame() {
@@ -19,10 +19,13 @@ export default function DiceGame() {
   const [ethBalance, setEthBalance] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedBalance = localStorage.getItem("cryptoBalance");
-    if (storedBalance) {
-      setBalance(Number(storedBalance));
-    }
+    const fetchBalance = async () => {
+      const balance = await getBalanceApi();
+      setBalance(balance);
+      localStorage.setItem("cryptoBalance", balance.toString());
+    };
+
+    fetchBalance();
   }, []);
 
   const connectWallet = async () => {

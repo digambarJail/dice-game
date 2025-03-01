@@ -15,3 +15,12 @@ export const rollDiceApi = async (bet: number): Promise<RollDiceResponse> => {
     throw new Error("Error rolling dice.");
   }
 };
+
+export const getBalanceApi = async (): Promise<any> => {
+  try {
+    const response = await axios.get<RollDiceResponse>(`${API_URL}/get-balance`);
+    return response.data;
+  } catch (error) {
+    throw new Error("Error rolling dice.");
+  }
+};
